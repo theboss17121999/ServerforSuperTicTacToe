@@ -1,5 +1,5 @@
 const express = require("express");
-const { createUser, updateUser } = require("./types");
+const { createUser, updateUser, findUser } = require("./types");
 const { User } = require("./db");
 const cors = require("cors"); // Import cors package
 
@@ -37,8 +37,31 @@ app.post("/SignUpUser", async function (req, res) {
 });
 
 app.get("/users", async function (req, res) {
-    const users = await User.find({});
-    res.json({ users });
+    const parsedPayLoad = findUser.safeParse(req.query);
+    console.log(parsedPayLoad);
+    if (!parsedPayLoad.success) {
+        res.status(411).json({
+            msg: "Email or Password invalid"
+        });
+        return;
+    }
+    try {
+        const users = await User.find(parsedPayLoad.data);
+        console.log(users);
+        if(users.length === 0) {
+            res.json({
+                msg: "email or password is wrong"
+            });
+        } else {
+            res.json({
+                msg: "User found"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            msg: "Internal server error"
+        });
+    }
 });
 
 app.put("/user/:id", async function (req, res) {

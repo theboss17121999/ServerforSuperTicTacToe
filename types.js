@@ -7,6 +7,11 @@ const createUser = zod.object({
     password: zod.string().min(6) // Added password length validation
 });
 
+const findUser = zod.object({
+    password: zod.string().min(6),
+    email: zod.string().email() 
+})
+
 const updateUser = zod.object({
     id: zod.string(),
     title: zod.string().optional(),
@@ -17,5 +22,6 @@ const updateUser = zod.object({
 
 module.exports = {
     createUser,
-    updateUser
+    updateUser,
+    findUser
 };
